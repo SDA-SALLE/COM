@@ -73,6 +73,8 @@ def speciation(folder):
 
 	CSV = listCSV(folder)
 
+	testingHABIL = []
+	testingNHABIL = []
 
 	for archive in CSV: 
 		index = 0
@@ -231,7 +233,7 @@ def speciation(folder):
 
 				WriteSpeciation(data, POLNAME, archive[pos:])
 
-			
+
 			
 		#OTHERS
 		elif archive[:pos] not in ['VOC', 'PM25', 'NOX', 'PM10']:
@@ -283,3 +285,69 @@ def speciation(folder):
 				data[ID]['General']['UNIT'] = 'g/s'
 
 			WriteSpeciation(data, archive[:pos], archive[pos:])
+
+
+		if archive[:pos] == 'PMC':
+			testingPMC(folder + archive)
+
+		if archive == 'PM25_HABIL.csv' or archive == 'PM10_HABIL.csv' or archive == 'PMC_HABIL.csv':
+			testingHABIL.append(folder + archive)
+			if len(testingHABIL) == 3: 
+				testingPM10(testingHABIL, 'HABIL')
+				#testing = []
+			
+		if archive == 'PM25_NHABIL.csv' or archive == 'PM10_NHABIL.csv' or archive == 'PMC_NHABIL.csv':
+			testingNHABIL.append(folder + archive)
+			if len(testingNHABIL) == 3: 
+				testingPM10(testingNHABIL, 'NHABIL')
+
+		
+
+
+def testingPMC(archive):
+	matriz = convertCSVMatrizPoint(archive)
+	head = matriz[0,:]
+	index = 0
+	for value in head: 
+		if value == 'UNIT':
+			colUNIT = index
+		index += 1
+
+	for i in range(1, matriz.shape[0]):
+		for x in range(colUNIT + 1, matriz.shape[1]):
+			if matriz[i][x] < 0 or matriz[i][x] < 0.0: 
+				print 'Review Process PMC number negative in position', 'Y = ', i, 'X = ', x
+			else:
+				pass 
+
+def testingPM10(archives, type):
+	for archive in archives:
+		matriz = convertCSVMatrizPoint(archive)
+		head = matriz[0,:]
+		index = 0
+		for value in head: 
+			if value == 'UNIT':
+				colUNIT = index
+			index += 1
+
+		val = 0
+		for i in range(1, matriz.shape[0]):
+			for x in range(colUNIT + 1, matriz.shape[1]):
+				val += float(matriz[i][x])
+
+		#print archive
+		if 'PM25' in archive: 
+			PM25 = val
+
+		if 'PMC' in archive: 
+			PMC = val
+
+		if 'PM10' in archive: 
+			PM10 = val
+
+	
+	suma =  PMC + PM25
+	if round(PM10, 2) != round(suma, 2): 
+		print 'Review Process PM25 and PMC number != PM10', Type
+	else: 
+		pass
