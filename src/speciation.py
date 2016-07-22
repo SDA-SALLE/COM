@@ -73,8 +73,6 @@ def speciation(folder):
 
 	CSV = listCSV(folder)
 
-	testingHABIL = []
-	testingNHABIL = []
 
 	for archive in CSV: 
 		index = 0
@@ -83,64 +81,72 @@ def speciation(folder):
 			if n == '_':
 				pos = index
 			index += 1 
+		
 		#VOC
 		if archive[:pos] == 'VOC': 
-			archive2 = folder + archive
-			matriz = convertCSVMatrizPoint(archive2)
-			head = matriz[0,:]
+
+			Types = VOC.keys()
+			VOCS = VOC[Types[0]].keys()
+
+			for SPC in VOCS:
+
+				archive2 = folder + archive
+				matriz = convertCSVMatrizPoint(archive2)
+				head = matriz[0,:]
 			
-			index = 0
-			for value in head:
-			 	if value == 'ID': 
-			 		colID = index
-			 	if value == 'ROW': 
-			 		colROW = index
-			 	if value == 'COL':
-			 		colCOL = index
-			 	if value == 'LAT': 
-			 		colLAT = index
-			 	if value == 'LON':
-			 		colLON = index
-			 	if value == 'UNIT': 
-			 		colUNIT = index
-			 	if value == 'POLNAME': 
-			 		colPOLNAME = index
-			 	if value == 'FUELTYPE':
-			 		colFUELTYPE = index
-				index += 1
 
-			for i in range(1, matriz.shape[0]):
-				ID = matriz[i][colID]
-				
-				if data.get(ID) is None:
-					data[ID] = {'General': {'ROW': int(float(matriz[i][colROW])), 'COL': int(float(matriz[i][colCOL])), 'LAT': float(matriz[i][colLAT]), 'LON': float(matriz[i][colLON]), 'UNIT': matriz[i][colUNIT], 'POLNAME': matriz[i][colPOLNAME], 'FUELTYPE': matriz[i][colFUELTYPE]}, 'hours': {}}
+				index = 0
+				for value in head:
+				 	if value == 'ID': 
+				 		colID = index
+				 	if value == 'ROW': 
+				 		colROW = index
+				 	if value == 'COL':
+				 		colCOL = index
+				 	if value == 'LAT': 
+				 		colLAT = index
+				 	if value == 'LON':
+				 		colLON = index
+				 	if value == 'UNIT': 
+				 		colUNIT = index
+				 	if value == 'POLNAME': 
+				 		colPOLNAME = index
+				 	if value == 'FUELTYPE':
+				 		colFUELTYPE = index
+					index += 1
 
-				for x in range(colUNIT + 1, matriz.shape[1]):
-					hour = matriz[0][x]
-					if data[ID]['hours'].get(hour) is None:
-						data[ID]['hours'][hour] = float(matriz[i][x])
+				data = {}	
+				for i in range(1, matriz.shape[0]):
+					ID = matriz[i][colID]
+					
+					if data.get(ID) is None:
+						data[ID] = {'General': {'ROW': int(float(matriz[i][colROW])), 'COL': int(float(matriz[i][colCOL])), 'LAT': float(matriz[i][colLAT]), 'LON': float(matriz[i][colLON]), 'UNIT': matriz[i][colUNIT], 'POLNAME': matriz[i][colPOLNAME], 'FUELTYPE': matriz[i][colFUELTYPE]}, 'hours': {}}
 
-			keys= data.keys()
-			VOCS = VOC[data[keys[0]]['General']['FUELTYPE']].keys()
+					for x in range(colUNIT + 1, matriz.shape[1]):
+						hour = matriz[0][x]
+						if data[ID]['hours'].get(hour) is None:
+							#print matriz[i][x]
+							data[ID]['hours'][hour] = float(matriz[i][x])
 
-			for SPCID in VOCS:
-				for ID in keys: 
-					hours = data[ID]['hours'].keys()
-					for hour in hours: 
-						if data[ID]['General']['FUELTYPE'] not in  VOC.keys():
-							data[ID]['General']['FUELTYPE'] = 'CHARBROILING'
-						
-						data[ID]['hours'][hour] = (data[ID]['hours'][hour] * VOC[data[ID]['General']['FUELTYPE']][SPCID]['MASSFRAC']) / (VOC[data[ID]['General']['FUELTYPE']][SPCID]['SPC_MOL_W'] * 3600)
-						data[ID]['General']['UNIT'] = 'mol/s'
+				keys = data.keys()
+			 	#print SPCID
+			  	for ID in keys: 
+			  		hours = data[ID]['hours'].keys()
+			  		#print data[ID]['hours']
+			  		for hour in hours: 
+			 			if data[ID]['General']['FUELTYPE'] not in VOC.keys():
+			  				data[ID]['General']['FUELTYPE'] = 'CHARBROILING'
+			  			data[ID]['hours'][hour] = (data[ID]['hours'][hour] * VOC[data[ID]['General']['FUELTYPE']][SPC]['MASSFRAC']) / (VOC[data[ID]['General']['FUELTYPE']][SPC]['SPC_MOL_W'] * 3600)
+			  		data[ID]['General']['UNIT'] = 'mol/s'
 
-				WriteSpeciationVOC(data, SPCID, archive[pos:])
+				WriteSpeciationVOC(data, SPC, archive[pos:])
 		
 		#PM25
 		elif archive[:pos] == 'PM25': 
 			archive2 = folder + archive
 			matriz = convertCSVMatrizPoint(archive2)
 			head = matriz[0,:]
-			
+			data = {}
 			index = 0
 			for value in head:
 			 	if value == 'ID': 
@@ -183,6 +189,7 @@ def speciation(folder):
 							if data[ID]['General']['FUELTYPE'] not in  VOC.keys():
 								data[ID]['General']['FUELTYPE'] = 'CHARBROILING'
 							data[ID]['hours'][hour] = (data[ID]['hours'][hour] * PM25[Type][SP]['MASSFRAC']) / 3600
+							data[ID]['General']['UNIT'] = 'g/s'
 				
 					WriteSpeciationPM25(data, SP, archive[pos:], Type)
 
@@ -194,6 +201,7 @@ def speciation(folder):
 				archive2 = folder + archive
 				matriz = convertCSVMatrizPoint(archive2)
 				head = matriz[0,:]
+				data = {}
 
 				index = 0
 				for value in head:
@@ -231,16 +239,17 @@ def speciation(folder):
 
 					data[ID]['General']['UNIT'] = 'g/s'
 
+				#print data
 				WriteSpeciation(data, POLNAME, archive[pos:])
 
-
-			
 		#OTHERS
-		elif archive[:pos] not in ['VOC', 'PM25', 'NOX', 'PM10']:
-
+		#print archive[:pos]
+		if archive[:pos] not in ['VOC', 'PM25', 'NOX', 'PM10']:
+			#print archive[:pos]
 			archive2 = folder + archive
 			matriz = convertCSVMatrizPoint(archive2)
 			head = matriz[0,:]
+			data = {}
 
 			index = 0
 			for value in head:
@@ -271,7 +280,6 @@ def speciation(folder):
 				for x in range(colUNIT + 1, matriz.shape[1]):
 					hour = matriz[0][x]
 					if data[ID]['hours'].get(hour) is None:
-						#
 						if archive[:pos] == 'CO': 
 							data[ID]['hours'][hour] = float(matriz[i][x])/(3600*28)
 						if archive[:pos] == 'CO2': 
@@ -285,69 +293,3 @@ def speciation(folder):
 				data[ID]['General']['UNIT'] = 'g/s'
 
 			WriteSpeciation(data, archive[:pos], archive[pos:])
-
-
-		if archive[:pos] == 'PMC':
-			testingPMC(folder + archive)
-
-		if archive == 'PM25_HABIL.csv' or archive == 'PM10_HABIL.csv' or archive == 'PMC_HABIL.csv':
-			testingHABIL.append(folder + archive)
-			if len(testingHABIL) == 3: 
-				testingPM10(testingHABIL, 'HABIL')
-				#testing = []
-			
-		if archive == 'PM25_NHABIL.csv' or archive == 'PM10_NHABIL.csv' or archive == 'PMC_NHABIL.csv':
-			testingNHABIL.append(folder + archive)
-			if len(testingNHABIL) == 3: 
-				testingPM10(testingNHABIL, 'NHABIL')
-
-		
-
-
-def testingPMC(archive):
-	matriz = convertCSVMatrizPoint(archive)
-	head = matriz[0,:]
-	index = 0
-	for value in head: 
-		if value == 'UNIT':
-			colUNIT = index
-		index += 1
-
-	for i in range(1, matriz.shape[0]):
-		for x in range(colUNIT + 1, matriz.shape[1]):
-			if matriz[i][x] < 0 or matriz[i][x] < 0.0: 
-				print 'Review Process PMC number negative in position', 'Y = ', i, 'X = ', x
-			else:
-				pass 
-
-def testingPM10(archives, type):
-	for archive in archives:
-		matriz = convertCSVMatrizPoint(archive)
-		head = matriz[0,:]
-		index = 0
-		for value in head: 
-			if value == 'UNIT':
-				colUNIT = index
-			index += 1
-
-		val = 0
-		for i in range(1, matriz.shape[0]):
-			for x in range(colUNIT + 1, matriz.shape[1]):
-				val += float(matriz[i][x])
-
-		#print archive
-		if 'PM25' in archive: 
-			PM25 = val
-
-		if 'PMC' in archive: 
-			PMC = val
-
-		if 'PM10' in archive: 
-			PM10 = val
-
-	
-	suma =  PMC + PM25
-	if round(PM10, 2) != round(suma, 2): 
-		print 'Review Process PM25 and PMC number != PM10', Type
-	else: 
-		pass
