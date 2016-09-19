@@ -16,14 +16,16 @@ from speciation import *
 folder = os.path.join('..','data', 'out', '')
 clear(folder)
 
-database = os.path.join('..', 'data', 'in', 'database.xlsx')
-Pollutants = emition(database)
+year = raw_input('Insert year running: ')
 
-emitions = os.path.join('..', 'data', 'out', 'year', 'Year_Emisions.csv')
-distribution(emitions, Pollutants)
+database = os.path.join('..', 'data', 'in', 'database_'+ year +'.xlsx')
+Pollutants = emition(database, year)
+
+emitions = os.path.join('..', 'data', 'out', 'year', 'Year_Emisions_'+ year +'.csv')
+distribution(emitions, Pollutants, year)
 
 distribution = os.path.join('..', 'data','out', 'distribution', '')
-SplitDistribution(distribution)
+SplitDistribution(distribution, year)
 
 split = os.path.join('..', 'data','out', 'split', '')
-speciation(split)
+speciation(split, year)

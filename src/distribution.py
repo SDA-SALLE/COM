@@ -10,7 +10,7 @@ sys.path.append('core')
 from excelmatriz import * 
 from wcsv import *
 
-def distribution(archive, pollutants):
+def distribution(archive, pollutants, year):
 	matriz = convertCSVMatrizPoint(archive)
 	Position = {}
 	Days = {}
@@ -66,7 +66,7 @@ def distribution(archive, pollutants):
 
 	matriz = None
 
-	distribution = os.path.join('..', 'data', 'in', 'Constants', 'distribution.xlsx')
+	distribution = os.path.join('..', 'data', 'in', 'Constants', 'distribution_' + year + '.xlsx')
 	matriz = convertXLSCSVPoint(distribution)
 
 	distribution = {}
@@ -81,15 +81,13 @@ def distribution(archive, pollutants):
 				if distribution[category].get(hour) is None:
 					distribution[category][hour] = matriz[i][x]
 
-	days = os.path.join('..', 'data', 'in', 'Constants', 'days.xlsx')
+	days = os.path.join('..', 'data', 'in', 'Constants', 'DAYS_'+ year +'.xlsx')
 	MDays = convertXLSCSVPoint(days)
 
 	for i in range(1, MDays.shape[0]):
 		Type = MDays[i][0]
 		if Days.get(Type) is None:
 			Days[Type] = int(float(MDays[i][2]))
-
-	#print Days
 
 	keys = data.keys()
 	for pollutant in pollutants:
@@ -100,7 +98,7 @@ def distribution(archive, pollutants):
 				data[ID]['hours'][hour] = float(float(data[ID]['Pollutants'][pollutant][0]) / Days[data[ID]['General']['WORKEDDAYS'][0]]) * float(distribution[data[ID]['General']['SOURCETYPE'][0]][hour])
 			data[ID]['hours'][24] = float(data[ID]['Pollutants'][pollutant][0]) * float(distribution[data[ID]['General']['SOURCETYPE'][0]][0])
 
-		WriteDistribution(data, pollutant)
+		WriteDistribution(data, pollutant, year)
 
 
 

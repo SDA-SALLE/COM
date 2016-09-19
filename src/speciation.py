@@ -13,9 +13,9 @@ from excelmatriz import *
 from wcsv import *
 
 
-def speciation(folder):
+def speciation(folder, year):
 
-	VOC = os.path.join('..', 'data', 'in', 'Speciation', 'COM_SCP_PROF_VOC.xlsx')
+	VOC = os.path.join('..', 'data', 'in', 'Speciation', 'COM_SCP_PROF_VOC_' + year + '.xlsx')
 	MVOC = convertXLSCSVPoint(VOC)
 	VOC = {}
 
@@ -44,7 +44,7 @@ def speciation(folder):
 			entrySPCID[SPCID] = {'MASSFRAC': float(MVOC[i][colMASSFRAC]), 'SPC_MOL_W': float(MVOC[i][colSPC])}
 
 	#PM25
-	PM25 = os.path.join('..', 'data', 'in', 'Speciation', 'COM_SCP_PROF_PM25.xlsx')
+	PM25 = os.path.join('..', 'data', 'in', 'Speciation', 'COM_SCP_PROF_PM25_' + year + '.xlsx')
 	MPM25 = convertXLSCSVPoint(PM25)
 	PM25 = {}
 
@@ -70,6 +70,7 @@ def speciation(folder):
 		if entrySPCID.get(SPCID) is None:
 			entrySPCID[SPCID] = {'MASSFRAC': float(MPM25[i][colMASSFRAC])}
 
+	#print PM25
 
 	CSV = listCSV(folder)
 
@@ -139,7 +140,7 @@ def speciation(folder):
 			  			data[ID]['hours'][hour] = (data[ID]['hours'][hour] * VOC[data[ID]['General']['FUELTYPE']][SPC]['MASSFRAC']) / (VOC[data[ID]['General']['FUELTYPE']][SPC]['SPC_MOL_W'] * 3600)
 			  		data[ID]['General']['UNIT'] = 'mol/s'
 
-				WriteSpeciationVOC(data, SPC, archive[pos:])
+				WriteSpeciationVOC(data, SPC, archive[pos:], year)
 		
 		#PM25
 		elif archive[:pos] == 'PM25': 
@@ -180,13 +181,14 @@ def speciation(folder):
 
 			FUELTYPE = PM25.keys()
 			keys = data.keys()
+
 			for Type in FUELTYPE: 
 				SPCID = PM25[Type].keys()
 				for SP in SPCID:
 					for ID in keys: 
 						hours = data[ID]['hours'].keys()
 						for hour in hours: 
-							if data[ID]['General']['FUELTYPE'] not in  VOC.keys():
+							if data[ID]['General']['FUELTYPE'] not in VOC.keys():
 								data[ID]['General']['FUELTYPE'] = 'CHARBROILING'
 							data[ID]['hours'][hour] = (data[ID]['hours'][hour] * PM25[Type][SP]['MASSFRAC']) / 3600
 							data[ID]['General']['UNIT'] = 'g/s'
@@ -282,14 +284,14 @@ def speciation(folder):
 					if data[ID]['hours'].get(hour) is None:
 						if archive[:pos] == 'CO': 
 							data[ID]['hours'][hour] = float(matriz[i][x])/(3600*28)
-						if archive[:pos] == 'CO2': 
+						elif archive[:pos] == 'CO2': 
 							data[ID]['hours'][hour] = float(matriz[i][x])/(3600*44)
-						if archive[:pos] == 'SO': 
+						elif archive[:pos] == 'SO': 
 							data[ID]['hours'][hour] = float(matriz[i][x])/(3600*64)
 						else: 
 							data[ID]['hours'][hour] = float(matriz[i][x])/3600
 
 
-				data[ID]['General']['UNIT'] = 'g/s'
+				data[ID]['General']['UNIT'] = 'mol/s'
 
 			WriteSpeciation(data, archive[:pos], archive[pos:])

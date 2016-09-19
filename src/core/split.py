@@ -11,7 +11,7 @@ from wcsv import *
 from listCSV import *
 
 
-def SplitDistribution(folder):
+def SplitDistribution(folder, year):
 	lstDistribution = listCSV(folder)
 	
 	for archive in lstDistribution:
@@ -76,5 +76,5 @@ def SplitDistribution(folder):
 						if matriz[0][x] == name:
 							data['NHABIL'][ID][name].append(matriz[i][x])
 
-		WriteSplit(data, pollutant)
+		WriteSplit(data, pollutant, year)
 

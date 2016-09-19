@@ -6,10 +6,10 @@
 import csv
 import os
 
-def WriteYear(data):
+def WriteYear(data, year):
 
 	folder = os.path.join('..', 'data', 'out','year', '')
-	csvsalida = open(folder + 'Year_Emisions.csv', 'w')
+	csvsalida = open(folder + 'Year_Emisions_'+ year +'.csv', 'w')
 
 	keys = data.keys()
 	identi = 0
@@ -49,9 +49,9 @@ def WriteYear(data):
 		csvsalida.write('\n')
 	csvsalida.close()
 
-def WriteDistribution(data, pollutant): 
+def WriteDistribution(data, pollutant, year): 
 	folder = os.path.join('..', 'data', 'out','distribution', '')
-	csvsalida = open(folder + pollutant + '_distribution.csv', 'w')
+	csvsalida = open(folder + pollutant + '_distribution_'+ year +'.csv', 'w')
 
 	names = ['ID', 'FUELTYPE', 'WORKEDDAYS','ROW', 'COL', 'LAT', 'LON', 'POLNAME', 'UNIT', 'E00h', 'E01h', 'E02h', 'E03h', 'E04h', 'E05h', 'E06h' ,'E07h', 'E08h', 'E09h', 'E10h', 'E11h', 'E12h', 'E13h', 'E14h', 'E15h', 'E16h', 'E17h', 'E18h', 'E19h', 'E20h', 'E21h', 'E22h', 'E23h', 'E24h']
 	for name in names: 
@@ -87,12 +87,12 @@ def WriteDistribution(data, pollutant):
 			csvsalida.write(str(data[ID]['hours'][hours]))
 		csvsalida.write('\n')
 
-def WriteSplit(data, pollutant):
+def WriteSplit(data, pollutant, year):
 	folder = os.path.join('..', 'data', 'out','split', '')
 
 	Types = data.keys()
 	for Type in Types:
-		csvsalida = open(folder + pollutant + '_' + Type + '.csv', 'w')
+		csvsalida = open(folder + pollutant + '_' + Type + '_'+ year +'.csv', 'w')
 		names = ['ID', 'FUELTYPE', 'WORKEDDAYS','ROW', 'COL', 'LAT', 'LON', 'POLNAME', 'UNIT', 'E00h', 'E01h', 'E02h', 'E03h', 'E04h', 'E05h', 'E06h' ,'E07h', 'E08h', 'E09h', 'E10h', 'E11h', 'E12h', 'E13h', 'E14h', 'E15h', 'E16h', 'E17h', 'E18h', 'E19h', 'E20h', 'E21h', 'E22h', 'E23h', 'E24h']
 		for name in names: 
 			if name == names[0]:
@@ -222,8 +222,3 @@ def WriteSpeciation(data, POLNAME, Type):
 			csvsalida.write(',')
 			csvsalida.write(str(data[ID]['hours'][hour]))
 		csvsalida.write('\n')
-
-
-
-
-

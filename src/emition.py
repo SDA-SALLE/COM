@@ -12,7 +12,7 @@ sys.path.append('core')
 from excelmatriz import * 
 from wcsv import *
 
-def emition(archive): 
+def emition(archive, year): 
 	matriz = convertXLSCSV(archive)
 
 	head = matriz[0,:]
@@ -86,7 +86,7 @@ def emition(archive):
 
 	matriz = None		
 	
-	archive = os.path.join('..', 'data', 'in', 'EmissionsFactors', 'EmissionFactors.xlsx')
+	archive = os.path.join('..', 'data', 'in', 'EmissionsFactors', 'EmissionFactors_' + year + '.xlsx')
 	matriz = convertXLSCSV(archive)
 
 	head = matriz[0,:]
@@ -103,7 +103,7 @@ def emition(archive):
 				if EmissionFactors[name].get(pollutant) is None: 
 					EmissionFactors[name][pollutant] = float(matriz[i][x])
 
-	YEAR = int(raw_input('Insert Year: '))
+	YEAR = int(year)
 
 
 
@@ -124,6 +124,6 @@ def emition(archive):
 
 	Pollutants.insert(0, 'PM25')
 	Pollutants.insert(0, 'PMC')
-	WriteYear(data)
+	WriteYear(data, year)
 	return Pollutants
 
