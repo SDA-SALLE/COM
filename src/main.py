@@ -12,6 +12,7 @@ from emition import *
 from distribution import *
 from split import *
 from speciation import *
+from unions import *
 
 folder = os.path.join('..','data', 'out', '')
 clear(folder)
@@ -29,3 +30,12 @@ SplitDistribution(distribution, year)
 
 split = os.path.join('..', 'data','out', 'split', '')
 speciation(split, year)
+
+'''INIT UNIONS'''
+folder = os.path.join('..', 'data', 'out', 'speciation', '')
+UNIONS(folder, year)
+
+folder = os.path.join('..', 'data', 'out', 'UNIONS', '')
+merge(folder)
+
+'''END UNIONS'''

@@ -128,8 +128,9 @@ def WriteSplit(data, pollutant, year):
 			csvsalida.write('\n')
 
 def WriteSpeciationVOC(data, POLNAME, Type):
+	#print POLNAME
 	folder = os.path.join('..', 'data', 'out', 'speciation', '')
-	csvsalida = open(folder + POLNAME +  '_' + Type, 'w')
+	csvsalida = open(folder + POLNAME + Type, 'w')
 
 	names = ['ROW', 'COL', 'LAT', 'LON', 'POLNAME', 'UNIT', 'E00h', 'E01h', 'E02h', 'E03h', 'E04h', 'E05h', 'E06h' ,'E07h', 'E08h', 'E09h', 'E10h', 'E11h', 'E12h', 'E13h', 'E14h', 'E15h', 'E16h', 'E17h', 'E18h', 'E19h', 'E20h', 'E21h', 'E22h', 'E23h', 'E24h']
 	for name in names: 
@@ -161,7 +162,7 @@ def WriteSpeciationVOC(data, POLNAME, Type):
 
 def WriteSpeciationPM25(data, POLNAME, Type, FUEL):
 	folder = os.path.join('..', 'data', 'out', 'speciation', '')
-	csvsalida = open(folder + POLNAME +  '_' + FUEL + '_' + Type, 'w')
+	csvsalida = open(folder + POLNAME +  '_' + FUEL + Type, 'w')
 
 	names = ['ROW', 'COL', 'LAT', 'LON', 'POLNAME', 'UNIT', 'E00h', 'E01h', 'E02h', 'E03h', 'E04h', 'E05h', 'E06h' ,'E07h', 'E08h', 'E09h', 'E10h', 'E11h', 'E12h', 'E13h', 'E14h', 'E15h', 'E16h', 'E17h', 'E18h', 'E19h', 'E20h', 'E21h', 'E22h', 'E23h', 'E24h']
 	for name in names: 
@@ -192,6 +193,7 @@ def WriteSpeciationPM25(data, POLNAME, Type, FUEL):
 		csvsalida.write('\n')
 
 def WriteSpeciation(data, POLNAME, Type):
+	#print Type
 	folder = os.path.join('..', 'data', 'out', 'speciation', '')
 	csvsalida = open(folder + POLNAME + Type, 'w')
 

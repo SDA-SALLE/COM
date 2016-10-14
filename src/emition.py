@@ -9,7 +9,7 @@ import sys
 import json
 import math
 sys.path.append('core')
-from excelmatriz import * 
+from matriz import * 
 from wcsv import *
 
 def emition(archive, year): 
@@ -115,7 +115,7 @@ def emition(archive, year):
 			print 'Review YEAR, number negative. ID = ',ID
 		for pollutant in Pollutants: 
 			data[ID]['results'][pollutant] = []
-			data[ID]['results'][pollutant].append((float(data[ID]['results']['TOTALCONSUMPTION'][0]) * float(EmissionFactors[data[ID]['base']['FUELID'][0]][pollutant]) * (math.exp(data[ID]['base']['GROWRATE'][0] * n))) * 12)
+			data[ID]['results'][pollutant].append(((float(data[ID]['results']['TOTALCONSUMPTION'][0]) * float(EmissionFactors[data[ID]['base']['FUELID'][0]][pollutant]) * (math.exp(data[ID]['base']['GROWRATE'][0] * n))) * 12))
 			if pollutant == 'PM10':
 				data[ID]['results']['PM25'] = []
 				data[ID]['results']['PMC'] = []
@@ -124,6 +124,7 @@ def emition(archive, year):
 
 	Pollutants.insert(0, 'PM25')
 	Pollutants.insert(0, 'PMC')
+	#print data
 	WriteYear(data, year)
 	return Pollutants
 

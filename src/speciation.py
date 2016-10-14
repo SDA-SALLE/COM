@@ -9,7 +9,7 @@ import sys
 import json
 sys.path.append('core')
 from listCSV import * 
-from excelmatriz import *
+from matriz import *
 from wcsv import *
 
 
@@ -78,13 +78,15 @@ def speciation(folder, year):
 	for archive in CSV: 
 		index = 0
 		data = {}
+		pos = []
+		
 		for n in archive:
 			if n == '_':
-				pos = index
+				pos.append(index)
 			index += 1 
 		
 		#VOC
-		if archive[:pos] == 'VOC': 
+		if archive[:pos[0]] == 'VOC': 
 
 			Types = VOC.keys()
 			VOCS = VOC[Types[0]].keys()
@@ -140,10 +142,10 @@ def speciation(folder, year):
 			  			data[ID]['hours'][hour] = (data[ID]['hours'][hour] * VOC[data[ID]['General']['FUELTYPE']][SPC]['MASSFRAC']) / (VOC[data[ID]['General']['FUELTYPE']][SPC]['SPC_MOL_W'] * 3600)
 			  		data[ID]['General']['UNIT'] = 'mol/s'
 
-				WriteSpeciationVOC(data, SPC, archive[pos:], year)
+				WriteSpeciationVOC(data, SPC, archive[pos[1]:])
 		
 		#PM25
-		elif archive[:pos] == 'PM25': 
+		elif archive[:pos[0]] == 'PM25': 
 			archive2 = folder + archive
 			matriz = convertCSVMatrizPoint(archive2)
 			head = matriz[0,:]
@@ -193,10 +195,10 @@ def speciation(folder, year):
 							data[ID]['hours'][hour] = (data[ID]['hours'][hour] * PM25[Type][SP]['MASSFRAC']) / 3600
 							data[ID]['General']['UNIT'] = 'g/s'
 				
-					WriteSpeciationPM25(data, SP, archive[pos:], Type)
+					WriteSpeciationPM25(data, SP, archive[pos[1]:], Type)
 
 		#NOX
-		elif archive[:pos] == 'NOX':
+		elif archive[:pos[0]] == 'NOX':
 
 			for POLNAME in ['NO2', 'NO']:
 				
@@ -242,11 +244,11 @@ def speciation(folder, year):
 					data[ID]['General']['UNIT'] = 'g/s'
 
 				#print data
-				WriteSpeciation(data, POLNAME, archive[pos:])
+				WriteSpeciation(data, POLNAME, archive[pos[1]:])
 
 		#OTHERS
 		#print archive[:pos]
-		if archive[:pos] not in ['VOC', 'PM25', 'NOX', 'PM10']:
+		if archive[:pos[0]] not in ['VOC', 'PM25', 'NOX', 'PM10']:
 			#print archive[:pos]
 			archive2 = folder + archive
 			matriz = convertCSVMatrizPoint(archive2)
@@ -282,11 +284,11 @@ def speciation(folder, year):
 				for x in range(colUNIT + 1, matriz.shape[1]):
 					hour = matriz[0][x]
 					if data[ID]['hours'].get(hour) is None:
-						if archive[:pos] == 'CO': 
+						if archive[:pos[0]] == 'CO': 
 							data[ID]['hours'][hour] = float(matriz[i][x])/(3600*28)
-						elif archive[:pos] == 'CO2': 
+						elif archive[:pos[0]] == 'CO2': 
 							data[ID]['hours'][hour] = float(matriz[i][x])/(3600*44)
-						elif archive[:pos] == 'SO': 
+						elif archive[:pos[0]] == 'SO': 
 							data[ID]['hours'][hour] = float(matriz[i][x])/(3600*64)
 						else: 
 							data[ID]['hours'][hour] = float(matriz[i][x])/3600
@@ -294,4 +296,4 @@ def speciation(folder, year):
 
 				data[ID]['General']['UNIT'] = 'mol/s'
 
-			WriteSpeciation(data, archive[:pos], archive[pos:])
+			WriteSpeciation(data, archive[:pos[0]], archive[pos[1]:])
