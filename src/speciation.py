@@ -118,7 +118,6 @@ def speciation(folder, year):
 				 		colFUELTYPE = index
 					index += 1
 
-				data = {}	
 				for i in range(1, matriz.shape[0]):
 					ID = matriz[i][colID]
 					

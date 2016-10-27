@@ -96,7 +96,7 @@ def distribution(archive, pollutants, year):
 			for hour in hours: 
 				#print Days[data[ID]['General']['WORKEDDAYS'][0]]
 				data[ID]['hours'][hour] = float(float(data[ID]['Pollutants'][pollutant][0]) / Days[data[ID]['General']['WORKEDDAYS'][0]]) * float(distribution[data[ID]['General']['SOURCETYPE'][0]][hour])
-			data[ID]['hours'][24] = float(data[ID]['Pollutants'][pollutant][0]) * float(distribution[data[ID]['General']['SOURCETYPE'][0]][0])
+			data[ID]['hours'][24] = data[ID]['hours'][0]
 		#print pollutant
 		WriteDistribution(data, pollutant, year)
 

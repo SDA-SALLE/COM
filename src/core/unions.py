@@ -142,11 +142,18 @@ def UNIONS(folder, year):
 	listout = listaCSV(folder)
 	
 	for out in listout:
+		pos = []
+		index = 0
+		for value in out:
+			if value == '_':
+				pos.append(index)
+			index += 1
 
-		if 'ENH' in out or 'NHABIL' in out or '_NHabil' in out:
-			listNHabil.append(out)
-		elif 'EH' in out or 'HABIL' in out or '_Habil' in out:
-			listHabil.append(out)
+		if out[:pos[0]] not in ['CO2', 'NROG']:
+			if 'ENH' in out or 'NHABIL' in out or '_NHabil' in out:
+				listNHabil.append(out)
+			elif 'EH' in out or 'HABIL' in out or '_Habil' in out:
+				listHabil.append(out)
 
 	foldersave = os.path.join('..', 'data', 'out', 'UNIONS', '')
 	
@@ -175,7 +182,7 @@ def UNIONS(folder, year):
 		matriz = None
 	csvsalida.close()
 
-	csvsalida = open(foldersave + 'pnt_commercial_weekday.'+ year +'.csv', 'w')
+	csvsalida = open(foldersave + 'pnt_commercial_weekday_'+ year +'.csv', 'w')
 	for name in names:
 		if name == 'ROW':
 			csvsalida.write(name)
